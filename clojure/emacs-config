@@ -56,6 +56,7 @@
 
 (require 'clojure-mode)
 (add-hook 'clojure-mode-hook    'enable-paredit-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
