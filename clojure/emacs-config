@@ -1,63 +1,66 @@
 ;; The file should be ~/.emacs
 
 (require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+(add-to-list 'package-archives
+               '("melpa" . "http://melpa-stable.milkbox.net/packages/") t)
+
 (package-initialize)
 (package-refresh-contents)
 
 (defvar my-packages '(rainbow-delimiters
-                      auto-complete
-                      ac-nrepl
-                      solarized-theme
+                      zenburn-theme
                       starter-kit
                       starter-kit-lisp
                       starter-kit-bindings
                       starter-kit-eshell
                       clojure-mode
-                      clojure-test-mode
                       cider))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
 
-;; rainbow delimiters
+(require 'cider)
+
+;;;; cider-repl
+
+;; make C-c C-z switch to CIDER REPL buffer in the current window
+(setq cider-repl-display-in-current-window t)
+
+;; change the result prefix for REPL evaluation (by default there's no
+;; prefix)
+(setq cider-repl-result-prefix ";; => ")
+
+;; change the result prefix for interactive evaluation (by default,
+;; it's =>
+(setq cider-interactive-eval-result-prefix ";; => ")
+
+;; enable error buffer popping in the REPL
+(setq cider-repl-popup-stacktraces t)
+
+(global-set-key (kbd "<f9>") 'cider-jack-in)
+
+;; hide "nrepl-connection* and *nrepl-server* buffers from appearing
+;; in some buffer switching commands like switch-to-buffer (C-x b)
+(setq nrepl-hide-special-buffers t)
+
+;;;; enable eldoc
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+
+;;;; rainbow delimiters
 (require 'rainbow-delimiters)
 (global-rainbow-delimiters-mode)
 
-;; paredit
+;;;; paredit
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (global-set-key (kbd "<f7>") 'paredit-mode)
 
-;; cider-repl
-(add-hook 'cider-repl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-(setq cider-repl-popup-stacktraces nil)
-(add-to-list 'same-window-buffer-names "*n*")
-(add-hook 'cider-repl-mode-hook 'paredit-mode)
+;;;; theme
+(load-theme 'zenburn t)
 
-(global-set-key (kbd "<f9>") 'cider-jack-in)
-
-;; Auto complete
-(require 'auto-complete-config)
-(ac-config-default)
-(define-key ac-completing-map "\M-/" 'ac-stop) ; use M-/ to stop completion
-
-;; ac-nrepl
-(require 'ac-nrepl)
-(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
-(add-hook 'cider-repl-interaction-mode-hook 'ac-nrepl-setup)
-(eval-after-load "auto-complete" '(add-to-list 'ac-modes 'cider-repl-mode))
-
-;; theme
-(load-theme 'solarized-light t)
-
-(require 'clojure-mode)
-(add-hook 'clojure-mode-hook    'enable-paredit-mode)
-(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-
+;;;; ido
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
