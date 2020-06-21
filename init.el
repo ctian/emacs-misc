@@ -43,6 +43,7 @@
 (setenv "PAGER" "cat")
 
 (setq inhibit-startup-message t)   ;; hide the startup message
+(menu-bar-mode -1)  ;; disable menu bar
 
 ;;==> backup setup
 (setq
